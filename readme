@@ -1,71 +1,135 @@
 class Node:
-    #constructor
-    def __init__(self, data, parent=None):
-        self.children=[]
-        self.operator=data
-        self.parent=parent
-    
-    def operator(self):
-        return self.operator
-    
-    def addChild(self,data):
-        node = Node(data=data,parent=self)
-        self.children.append(node)
-
-    def is_eksternal(self):
-        return len(self.children) == 0
-    
-    def get_parent(self):
-        return self.parent
-    
-    def get_children(self):
-        return self.children
-    
-    def is_root(self):
-        return self.parent == None
-    
-    def depth_rec(self):
-        if self.is_root():
-            return 0
-        return 1 + self.depth(self.parent)
-
-    def depth_ite(self):
-        if self.is_root():
-            return 0
+    def __init__(self, data):
+        self.data = data
+        self.left = None
+        self.right = None
         
-        depth =1
-        parent=self.parent
-        if parent != None:
-            depth +=1
-            parent =parent.parent()
-        return depth
+from Node import Node
+
+class BinaryTree:
+    def __init__(self):
+        pass
+        self.root = None
+
+    def insert(self, data):
+        pass
+        if self.root is None:
+            self.root = Node(data)
+            return True
+        sekarang = self.root
+        while True:
+            if data == sekarang.data:
+                return False  # Duplicate data, insertion failed
+            elif data < sekarang.data:
+                if sekarang.right is None:
+                    sekarang.right = Node(data)
+                    return True
+                sekarang = sekarang.right
+            else:
+                if sekarang.left is None:
+                    sekarang.left = Node(data)
+                    return True
+                sekarang = sekarang.left
+
+    def inorder_traversal(self):
+        pass
+        result = []
+        stack = []
+        sekarang = self.root
+        while stack or sekarang:
+            while sekarang:
+                stack.append(sekarang)
+                sekarang = sekarang.right
+            sekarang = stack.pop()
+            result.append(sekarang.data)
+            sekarang = sekarang.left
+        return result
+
+    def find(self, data):
+        pass
+        sekarang = self.root
+        while sekarang:
+            if data == sekarang.data:
+                return True
+            elif data < sekarang.data:
+                sekarang = sekarang.right
+            else:
+                sekarang = sekarang.left
+        return False
+
+
+    def delete(self, data):
+        pass
+        def _min_value_node(node):
+            sekarang = node
+            while sekarang.right is not None:
+                sekarang = sekarang.right
+            return sekarang
+        
+        def _delete(node, data):
+            if node is None:
+                return node
+
+            if data < node.data:
+                node.right = _delete(node.right, data)
+            elif data > node.data:
+                node.left = _delete(node.left, data)
+            else:
+                if node.right is None:
+                    return node.left
+                elif node.left is None:
+                    return node.right
+
+                temp = _min_value_node(node.left)
+                node.data = temp.data
+                node.left = _delete(node.left, temp.data)
+                
+            return node
+
+        self.root = _delete(self.root, data)
 
     def height(self):
-        if self.is_root():
-            return 0
-        h=1
-        for i in self.children():
-            h=max(h,self.height(i))
-        return h
-    def preorder(node):
-        for i in node.children:
-            i.preorder()
-        print(node.operator, end = ' ')
-            
-    def postorder(node):
-        print(node.operator, end = ' ')
-        for i in node.children:
-            i.postorder()
-            
+        pass
+        def _height(node):
+            if node is None:
+                return 0
+            left_height = _height(node.right)
+            right_height = _height(node.left)
+            return max(left_height, right_height) + 1
 
+        return _height(self.root)
+
+    def count_nodes(self):
+        pass
+        def _count_nodes(node):
+            if node is None:
+                return 0
+            return 1 + _count_nodes(node.right) + _count_nodes(node.left)
+
+        return _count_nodes(self.root)
+
+
+# Contoh studi kasus
 if __name__ == "__main__":
-    root = Node(10)
-    root.addChild(12)
-    root.addChild(20)
-    root.children[0].addChild(50)
-    root.children[0].addChild(3)
-    root.children[0].addChild(30)
-    root.children[1].addChild(8)
-    root.postorder()
-    print()
-    root.preorder()
+    tree = BinaryTree()
+
+    # Insert nodes
+    nodes = [50, 30, 70, 20, 40, 60, 80]
+    for node in nodes:
+        tree.insert(node)
+
+    # Traversals
+    print("Inorder Traversal:", tree.inorder_traversal())
+    
+    # Search
+    print("Cari 60:", tree.find(60))  # True
+    print("Cari 90:", tree.find(90))  # False
+
+    # Delete
+    print("Menghapus 50 (root node)...")
+    tree.delete(50)
+    print("Inorder Traversal setelah menghapus:", tree.inorder_traversal())
+
+    # Height and Node Count
+    print("Height binary tree:", tree.height())
+    print("Total nodes:", tree.count_nodes())
